@@ -43,27 +43,41 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class Test extends StatefulWidget {
+  const Test({Key? key}) : super(key: key);
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<Test> createState() => _TestState();
+}
+
+class _TestState extends State<Test> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   final appState = AppState();
-  ShoppingRouterDelegate delegate;
+  late ShoppingRouterDelegate delegate;
   final parser = ShoppingParser();
-  ShoppingBackButtonDispatcher backButtonDispatcher;
+  late ShoppingBackButtonDispatcher backButtonDispatcher;
 
-  StreamSubscription _linkSubscription;
-
-  _MyAppState() {
-    delegate = ShoppingRouterDelegate(appState);
-    delegate.setNewRoutePath(SplashPageConfig);
-    backButtonDispatcher = ShoppingBackButtonDispatcher(delegate);
-  }
+  late StreamSubscription _linkSubscription;
 
   @override
   void initState() {
+    delegate = ShoppingRouterDelegate(
+        backButtonDispatcher: null, appState: appState);
+    delegate.setNewRoutePath(SplashPageConfig);
+    backButtonDispatcher = ShoppingBackButtonDispatcher(delegate);
     super.initState();
     initPlatformState();
   }
@@ -76,15 +90,13 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    // Attach a listener to the Uri links stream
-    _linkSubscription = getUriLinksStream().listen((Uri uri) {
+    _linkSubscription = uriLinkStream.listen((uri) {
       if (!mounted) return;
       setState(() {
-        delegate.parseRoute(uri);
+        delegate.parseRoute(uri!);
       });
-    }, onError: (Object err) {
-      print('Got error $err');
     });
+    // Attach a listener to the Uri links stream
   }
 
   @override

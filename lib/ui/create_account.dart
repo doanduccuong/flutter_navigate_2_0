@@ -134,7 +134,7 @@ class _CreateAccountState extends State<CreateAccount> {
                           side: const BorderSide(color: Colors.black),
                         ),
                         onPressed: () {
-                          appState.currentAction = PageAction(state: PageState.pop);
+                          // appState.currentAction = PageAction(state: PageState.pop, page: null);
                         },
                         child: const Text('Cancel', style: TextStyle(color: Colors.black),),
                       ),

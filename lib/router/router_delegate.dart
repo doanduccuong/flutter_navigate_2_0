@@ -45,28 +45,31 @@ import 'ui_pages.dart';
 
 class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration> {
-  final List<Page> _pages = [];
-  ShoppingBackButtonDispatcher backButtonDispatcher;
+  final List<Page>? _pages = [];
+  ShoppingBackButtonDispatcher? backButtonDispatcher;
 
   @override
-  final GlobalKey<NavigatorState> navigatorKey;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   final AppState appState;
 
-  ShoppingRouterDelegate(this.appState) : navigatorKey = GlobalKey() {
+  ShoppingRouterDelegate({
+    required this.appState,
+     this.backButtonDispatcher,
+  }) {
     appState.addListener(() {
       notifyListeners();
     });
   }
 
   /// Getter for a list that cannot be changed
-  List<MaterialPage> get pages => List.unmodifiable(_pages);
+  List<MaterialPage> get pages => List.unmodifiable(_pages!);
 
   /// Number of pages function
-  int numPages() => _pages.length;
+  int numPages() => _pages!.length;
 
   @override
   PageConfiguration get currentConfiguration =>
-      _pages.last.arguments as PageConfiguration;
+      _pages!.last.arguments as PageConfiguration;
 
   @override
   Widget build(BuildContext context) {
@@ -90,26 +93,24 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
     }
   }
 
-  void _removePage(MaterialPage page) {
-    if (page != null) {
-      _pages.remove(page);
-    }
+  void _removePage(Page? page) {
+    _pages!.remove(page);
   }
 
   void pop() {
     if (canPop()) {
-      _removePage(_pages.last);
+      _removePage(_pages?.last);
     }
   }
 
   bool canPop() {
-    return _pages.length > 1;
+    return _pages!.length > 1;
   }
 
   @override
   Future<bool> popRoute() {
     if (canPop()) {
-      _removePage(_pages.last);
+      _removePage(_pages!.last);
       return Future.value(true);
     }
     return Future.value(false);
@@ -124,17 +125,17 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
   }
 
   void _addPageData(Widget child, PageConfiguration pageConfig) {
-    _pages.add(
+    _pages!.add(
       _createPage(child, pageConfig),
     );
   }
 
-  void addPage(PageConfiguration pageConfig) {
-    final shouldAddPage = _pages.isEmpty ||
-        (_pages.last.arguments as PageConfiguration).uiPage !=
-            pageConfig.uiPage;
+  void addPage(PageConfiguration? pageConfig) {
+    final shouldAddPage = _pages!.isEmpty ||
+        (_pages!.last.arguments as PageConfiguration).uiPage !=
+            pageConfig?.uiPage;
     if (shouldAddPage) {
-      switch (pageConfig.uiPage) {
+      switch (pageConfig?.uiPage) {
         case Pages.Splash:
           _addPageData(Splash(), SplashPageConfig);
           break;
@@ -157,8 +158,10 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
           _addPageData(Settings(), SettingsPageConfig);
           break;
         case Pages.Details:
-          if (pageConfig.currentPageAction != null) {
-            _addPageData(pageConfig.currentPageAction.widget, pageConfig);
+          final currentPageAction = pageConfig?.currentPageAction;
+          if (currentPageAction != null) {
+            _addPageData(
+                currentPageAction.widget ?? const SizedBox(), pageConfig!);
           }
           break;
         default:
@@ -167,51 +170,51 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
     }
   }
 
-  void replace(PageConfiguration newRoute) {
-    if (_pages.isNotEmpty) {
-      _pages.removeLast();
+  void replace(PageConfiguration? newRoute) {
+    if (_pages!.isNotEmpty) {
+      _pages!.removeLast();
     }
     addPage(newRoute);
   }
 
   void setPath(List<MaterialPage> path) {
-    _pages.clear();
-    _pages.addAll(path);
+    _pages!.clear();
+    _pages!.addAll(path);
   }
 
-  void replaceAll(PageConfiguration newRoute) {
-    setNewRoutePath(newRoute);
+  void replaceAll(PageConfiguration? newRoute) {
+    setNewRoutePath(newRoute!);
   }
 
   void push(PageConfiguration newRoute) {
     addPage(newRoute);
   }
 
-  void pushWidget(Widget child, PageConfiguration newRoute) {
-    _addPageData(child, newRoute);
+  void pushWidget(Widget? child, PageConfiguration? newRoute) {
+    _addPageData(child ?? const SizedBox(), newRoute!);
   }
 
-  void addAll(List<PageConfiguration> routes) {
-    _pages.clear();
-    routes.forEach((route) {
+  void addAll(List<PageConfiguration>? routes) {
+    _pages!.clear();
+    routes?.forEach((route) {
       addPage(route);
     });
   }
 
   @override
   Future<void> setNewRoutePath(PageConfiguration configuration) {
-    final shouldAddPage = _pages.isEmpty ||
-        (_pages.last.arguments as PageConfiguration).uiPage !=
+    final shouldAddPage = _pages!.isEmpty ||
+        (_pages!.last.arguments as PageConfiguration).uiPage !=
             configuration.uiPage;
     if (shouldAddPage) {
-      _pages.clear();
+      _pages!.clear();
       addPage(configuration);
     }
     return SynchronousFuture(null);
   }
 
   void _setPageAction(PageAction action) {
-    switch (action.page.uiPage) {
+    switch (action.page?.uiPage) {
       case Pages.Splash:
         SplashPageConfig.currentPageAction = action;
         break;
@@ -265,7 +268,8 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
           break;
         case PageState.addWidget:
           _setPageAction(appState.currentAction);
-          pushWidget(appState.currentAction.widget, appState.currentAction.page);
+          pushWidget(
+              appState.currentAction.widget, appState.currentAction.page);
           break;
         case PageState.addAll:
           addAll(appState.currentAction.pages);
@@ -273,9 +277,8 @@ class ShoppingRouterDelegate extends RouterDelegate<PageConfiguration>
       }
     }
     appState.resetCurrentAction();
-    return List.of(_pages);
+    return List.of(_pages!);
   }
-
 
   void parseRoute(Uri uri) {
     if (uri.pathSegments.isEmpty) {

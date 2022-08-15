@@ -28,13 +28,15 @@
  * THE SOFTWARE.
  */
 import 'package:flutter/material.dart';
-import 'package:navigation_app/ui/details.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
 import '../router/ui_pages.dart';
+import 'details.dart';
 
 class ListItems extends StatelessWidget {
+  const ListItems({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context, listen: false);
@@ -66,7 +68,7 @@ class ListItems extends StatelessWidget {
           itemCount: items.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text('${items[index]}'),
+              title: Text(items[index]),
               onTap: () {
                 appState.currentAction = PageAction(
                     state: PageState.addWidget,

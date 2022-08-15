@@ -58,7 +58,7 @@ class Details extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   appState.addToCart('Item $id');
-                  appState.currentAction = PageAction(state: PageState.pop);
+                  appState.currentAction = PageAction(state: PageState.pop, page: null);
                 },
                 child: const Text('Add to Cart'),
               ),

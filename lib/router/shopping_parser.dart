@@ -34,12 +34,12 @@ class ShoppingParser extends RouteInformationParser<PageConfiguration> {
   @override
   Future<PageConfiguration> parseRouteInformation(
       RouteInformation routeInformation) async {
-    final uri = Uri.parse(routeInformation.location);
+    final uri = Uri.parse(routeInformation.location ?? "");
     if (uri.pathSegments.isEmpty) {
       return SplashPageConfig;
     }
 
-    final path = '/' + uri.pathSegments[0];
+    final path = '/${uri.pathSegments[0]}';
     switch (path) {
       case SplashPath:
         return SplashPageConfig;
@@ -81,8 +81,8 @@ class ShoppingParser extends RouteInformationParser<PageConfiguration> {
         return const RouteInformation(location: CheckoutPath);
       case Pages.Settings:
         return const RouteInformation(location: SettingsPath);
-      default: return const RouteInformation(location: SplashPath);
-
+      default:
+        return const RouteInformation(location: SplashPath);
     }
   }
 }
