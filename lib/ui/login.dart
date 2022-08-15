@@ -27,17 +27,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
+import '../router/ui_pages.dart';
 
-class CreateAccount extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
-  _CreateAccountState createState() => _CreateAccountState();
+  _LoginState createState() => _LoginState();
 }
 
-class _CreateAccountState extends State<CreateAccount> {
+class _LoginState extends State<Login> {
   TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -52,7 +54,7 @@ class _CreateAccountState extends State<CreateAccount> {
         elevation: 0,
         backgroundColor: Colors.lightBlue,
         title: const Text(
-          'Create Account',
+          'Login',
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
         ),
@@ -107,13 +109,15 @@ class _CreateAccountState extends State<CreateAccount> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).primaryColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0)),
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor)),
+                          primary: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          side: BorderSide(
+                              color: Theme.of(context).primaryColor),
+                        ),
                         onPressed: () {
-                          appState.login();
+                          appState.currentAction = PageAction(state: PageState.addPage, page: CreateAccountPageConfig);
                         },
                         child: const Text(
                           'Create Account',
@@ -134,9 +138,9 @@ class _CreateAccountState extends State<CreateAccount> {
                           side: const BorderSide(color: Colors.black),
                         ),
                         onPressed: () {
-                          appState.currentAction = PageAction(state: PageState.pop);
+                          appState.login();
                         },
-                        child: const Text('Cancel', style: TextStyle(color: Colors.black),),
+                        child: const Text('Login', style: TextStyle(color: Colors.black),),
                       ),
                     ),
                     const SizedBox(
@@ -151,5 +155,4 @@ class _CreateAccountState extends State<CreateAccount> {
       ),
     );
   }
-
 }
